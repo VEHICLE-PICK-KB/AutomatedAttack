@@ -15,10 +15,10 @@ BASE_DIR := "C:\General\AUT"
 LOG_FILE := BASE_DIR "\automationXYBB.log"
 
 
-EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos et halua tarkistusta)
-CLICK_DELAY := 300           ; viive steppien välissä (ms)
+EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos ei tarkistusta)
+CLICK_DELAY := 300           ; viive vaiheiden välissä (ms)
 
-; Hätästoppi
+; Terminate
 Esc::ExitApp
 
 ; Ctrl+Alt+J: näytä ja loggaa koordinaatit aktiivisen ikkunan sisällä
@@ -61,7 +61,7 @@ F8::{
 
             ; ==========================================
             ;  UUSI AUTOMAATION KLIKKISARJA (Window)
-            ;  Lähde: testikierros 2025-12-24 21:13–21:14
+            ;  Lähde: testikierros 2025-12-24 21:13–21:14 (edited)
             ; ==========================================
 
             ZoomWheel(17, "Down")
@@ -273,10 +273,10 @@ F8::{
             start := A_TickCount
             timeout := 110000
 
-            green := 0x8BD43A   ; <-- vaihda tähän Ctrl+Alt+C:llä saamasi arvo
-            px := 947           ; <-- vaihda: vihreän napin sisällä oleva X (Window)
-            py := 865           ; <-- vaihda: vihreän napin sisällä oleva Y (Window)
-            tol := 25           ; <-- toleranssi (20–40 on yleensä ok)
+            green := 0x8BD43A   
+            px := 947           
+            py := 865           
+            tol := 25           
 
             CoordMode "Pixel", "Window"
 
@@ -469,7 +469,6 @@ F8::{
     }
 }
 
-; Klikkaa aktiivisen ikkunan sisällä oleviin koordinaatteihin
 ClickAt(x, y, clicks := 1, betweenClicksMs := 80) {
     CoordMode "Mouse", "Window"
     Log("ClickAt (Window): X=" x " Y=" y " | clicks=" clicks)
@@ -496,4 +495,5 @@ ZoomWheel(steps := 6, direction := "Down", delayMs := 20) {
     Log("ZoomWheel: " direction " steps=" steps)
 
    
+
 }
