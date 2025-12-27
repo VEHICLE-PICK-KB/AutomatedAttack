@@ -3,7 +3,6 @@
 
 ; =========================
 ;  KOORDINAATTI-POHJA (WINDOW MODE)
-;  - Kaikki klikkaukset ovat koordinaateilla (ei ImageSearchiä)
 ;  - Koordinaatit ovat suhteessa AKTIIVISEEN IKKUNAAN (Window)
 ;  - F8 = aja klikkisarja
 ;  - Ctrl+Alt+J = näytä & loggaa hiiren X/Y (Window)
@@ -15,10 +14,10 @@ BASE_DIR := "C:\General\AUT"
 LOG_FILE := BASE_DIR "\automationXY.log"
 
 
-EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos et halua tarkistusta)
-CLICK_DELAY := 100           ; viive steppien välissä (ms)
+EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos ei tarkistusta)
+CLICK_DELAY := 100           ; viive vaiheiden välissä (ms)
 
-; Hätästoppi
+; Stop
 Esc::ExitApp
 
 ; Ctrl+Alt+J: näytä ja loggaa koordinaatit aktiivisen ikkunan sisällä
@@ -54,7 +53,7 @@ F8::{
 
     ToolTip "Coord automation running... (Esc = stop)"
     try {
-        LOOP_DELAY := 3000  ; <-- tauko kierrosten välissä (ms)
+        LOOP_DELAY := 3000 
 
         while true {
             Log("=== LOOP " A_Index " START ===")
@@ -653,10 +652,10 @@ F8::{
             start := A_TickCount
             timeout := 160000
 
-            green := 0xC5EB5F   ; <-- vaihda tähän Ctrl+Alt+C:llä saamasi arvo
-            px := 952           ; <-- vaihda: vihreän napin sisällä oleva X (Window)
-            py := 881           ; <-- vaihda: vihreän napin sisällä oleva Y (Window)
-            tol := 25           ; <-- toleranssi (20–40 on yleensä ok)
+            green := 0xC5EB5F   
+            px := 952           
+            py := 881           
+            tol := 25           
 
             CoordMode "Pixel", "Window"
 
@@ -693,7 +692,7 @@ F8::{
     }
 }
 
-; Klikkaa aktiivisen ikkunan sisällä oleviin koordinaatteihin
+
 ClickAt(x, y, clicks := 1, betweenClicksMs := 80) {
     CoordMode "Mouse", "Window"
     Log("ClickAt (Window): X=" x " Y=" y " | clicks=" clicks)
@@ -721,4 +720,5 @@ ZoomWheel(steps := 6, direction := "Down", delayMs := 20) {
 
    
 }
+
 
