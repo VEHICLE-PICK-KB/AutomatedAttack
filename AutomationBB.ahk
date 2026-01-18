@@ -1,5 +1,8 @@
 ﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
+DllCall("SetProcessDPIAware")
+
+
 
 ; =========================
 ;  KOORDINAATTI-POHJA (WINDOW MODE)
@@ -13,12 +16,37 @@
 
 BASE_DIR := "C:\General\AUT"
 LOG_FILE := BASE_DIR "\automationXYBB.log"
+SHIP_IMGS := [
+    "C:\General\AUT\Laiva.PNG"
+]
+
+CART_IMGS := [
+    "C:\General\AUT\Cart1.png",
+    "C:\General\AUT\Cart2.png",
+    "C:\General\AUT\Cart3.png"
+]
 
 
-EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos ei tarkistusta)
-CLICK_DELAY := 300           ; viive vaiheiden välissä (ms)
+CART_VARIATION := 130    ; tyypillisesti 100–160
 
-; Terminate
+
+TIMEOUT_MS := 2500
+POLL_MS := 60
+
+; Kuinka laaja alue laivan ympäriltä etsitään kärryä (pikseleinä)
+SEARCH_RADIUS_X := 900
+SEARCH_RADIUS_Y := 600
+
+; Klikkaus-offset kärrylöydöstä (koska ImageSearch antaa yleensä vasemman yläkulman)
+CLICK_OFFSET_X := 30
+CLICK_OFFSET_Y := 30
+
+
+
+EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos et halua tarkistusta)
+CLICK_DELAY := 300           ; viive steppien välissä (ms)
+
+; Hätästoppi
 Esc::ExitApp
 
 ; Ctrl+Alt+J: näytä ja loggaa koordinaatit aktiivisen ikkunan sisällä
@@ -40,7 +68,33 @@ Esc::ExitApp
     SetTimer () => ToolTip(), -1500
 }
 
+
+F5::
+{
+
+    ZoomWheel(17, "Down")
+    Sleep 1000
+
+    Drag(555, 129, 157, 562)
+    Sleep 1000
+
+    ClickAt(1037, 413)
+    Sleep 1000
+}
+
+
+F6::
+{
+
+}
+
+
+
+
+
+
 F9::Reload
+
 
 ; F8: aja automaatio (loop)
 F8::{
@@ -61,7 +115,7 @@ F8::{
 
             ; ==========================================
             ;  UUSI AUTOMAATION KLIKKISARJA (Window)
-            ;  Lähde: testikierros 2025-12-24 21:13–21:14 (edited)
+            ;  Lähde: testikierros 2025-12-24 21:13–21:14
             ; ==========================================
 
             ZoomWheel(17, "Down")
@@ -72,7 +126,22 @@ F8::{
 
 
             ZoomWheel(17, "Down")
+            Sleep 2000
+
+
+            Drag(555, 129, 157, 562)
+            Sleep 5000
+
+            ClickAt(1092, 511)
             Sleep 1000
+
+            ClickAt(1273, 869)
+            Sleep 1000
+
+            ClickAt(1462, 137)
+            Sleep 3000
+
+
 
             ClickAt(97, 928)
             Sleep 300
@@ -273,10 +342,10 @@ F8::{
             start := A_TickCount
             timeout := 110000
 
-            green := 0x8BD43A   
-            px := 947           
-            py := 865           
-            tol := 25           
+            green := 0x8BD43A   ; <-- vaihda tähän Ctrl+Alt+C:llä saamasi arvo
+            px := 947           ; <-- vaihda: vihreän napin sisällä oleva X (Window)
+            py := 865           ; <-- vaihda: vihreän napin sisällä oleva Y (Window)
+            tol := 25           ; <-- toleranssi (20–40 on yleensä ok)
 
             CoordMode "Pixel", "Window"
 
@@ -469,6 +538,7 @@ F8::{
     }
 }
 
+; Klikkaa aktiivisen ikkunan sisällä oleviin koordinaatteihin
 ClickAt(x, y, clicks := 1, betweenClicksMs := 80) {
     CoordMode "Mouse", "Window"
     Log("ClickAt (Window): X=" x " Y=" y " | clicks=" clicks)
@@ -495,5 +565,42 @@ ZoomWheel(steps := 6, direction := "Down", delayMs := 20) {
     Log("ZoomWheel: " direction " steps=" steps)
 
    
+}
 
+Drag(fromX, fromY, toX, toY, holdMs := 200, moveSpeed := 20) {
+    MouseMove(fromX, fromY, moveSpeed)
+    Sleep(200)
+    Click("Down")          ; vasen nappi alas
+    Sleep(holdMs)
+    MouseMove(toX, toY, moveSpeed)
+    Sleep(200)
+    Click("Up")
+}
+
+GetActiveClientRect(&L, &T, &R, &B) {
+    hwnd := WinExist("A")
+    if !hwnd
+        return false
+    WinGetClientPos(&cx, &cy, &cw, &ch, "ahk_id " hwnd)
+    WinGetPos(&wx, &wy, , , "ahk_id " hwnd)
+    L := wx + cx
+    T := wy + cy
+    R := L + cw
+    B := T + ch
+    return true
+}
+
+WaitAnyImage(imgList, L, T, R, B, variation, timeoutMs, pollMs, &x, &y, &foundPath := "") {
+    t0 := A_TickCount
+    while (A_TickCount - t0 < timeoutMs) {
+        for img in imgList {
+            if ImageSearch(&x, &y, L, T, R, B, "*" variation " " img) {
+                foundPath := img
+                return true
+            }
+        }
+        Sleep(pollMs)
+    }
+    foundPath := ""
+    return false
 }
