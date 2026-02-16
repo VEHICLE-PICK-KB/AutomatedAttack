@@ -4,15 +4,13 @@ DllCall("SetProcessDPIAware")
 
 
 
-; =========================
 ;  KOORDINAATTI-POHJA (WINDOW MODE)
-;  - Kaikki klikkaukset ovat koordinaateilla (ei ImageSearchiä)
+;  - Kaikki klikkaukset ovat koordinaateilla
 ;  - Koordinaatit ovat suhteessa AKTIIVISEEN IKKUNAAN (Window)
 ;  - F8 = aja klikkisarja
 ;  - Ctrl+Alt+J = näytä & loggaa hiiren X/Y (Window)
 ;  - Esc = stop
-;  - Loki: C:\General\AUT\automation.log
-; =========================
+;  - Kuvan perusteella etsintä on keskeneräinen/toimii huonosti
 
 BASE_DIR := "C:\General\AUT"
 LOG_FILE := BASE_DIR "\automationXYBB.log"
@@ -43,10 +41,9 @@ CLICK_OFFSET_Y := 30
 
 
 
-EXE_NAME := "crosvm.exe"     ; kohdesovelluksen exe (jätä "" jos et halua tarkistusta)
+EXE_NAME := "crosvm.exe"     
 CLICK_DELAY := 300           ; viive steppien välissä (ms)
 
-; Hätästoppi
 Esc::ExitApp
 
 ; Ctrl+Alt+J: näytä ja loggaa koordinaatit aktiivisen ikkunan sisällä
@@ -68,7 +65,7 @@ Esc::ExitApp
     SetTimer () => ToolTip(), -1500
 }
 
-
+; Testaus
 F5::
 {
 
@@ -113,10 +110,8 @@ F8::{
         while true {
             Log("=== LOOP " A_Index " START ===")
 
-            ; ==========================================
             ;  UUSI AUTOMAATION KLIKKISARJA (Window)
             ;  Lähde: testikierros 2025-12-24 21:13–21:14
-            ; ==========================================
 
             ZoomWheel(17, "Down")
             Sleep 1000
@@ -342,9 +337,9 @@ F8::{
             start := A_TickCount
             timeout := 110000
 
-            green := 0x8BD43A   ; <-- vaihda tähän Ctrl+Alt+C:llä saamasi arvo
-            px := 947           ; <-- vaihda: vihreän napin sisällä oleva X (Window)
-            py := 865           ; <-- vaihda: vihreän napin sisällä oleva Y (Window)
+            green := 0x8BD43A   
+            px := 947           ; <-- vihreän napin sisällä oleva X (Window)
+            py := 865           ; <-- vihreän napin sisällä oleva Y (Window)
             tol := 25           ; <-- toleranssi (20–40 on yleensä ok)
 
             CoordMode "Pixel", "Window"
@@ -603,4 +598,5 @@ WaitAnyImage(imgList, L, T, R, B, variation, timeoutMs, pollMs, &x, &y, &foundPa
     }
     foundPath := ""
     return false
+
 }
